@@ -6,13 +6,14 @@ Requires a bundled `midicat` 0.9.x binary (for `midicatdrv`) next to the app.
 
 ## Install on Raspberry Pi OS Lite (Trixie, arm64)
 
-From a clone of this repo:
+Copy the contents of `deploy/` to the Pi (that folder alone is enough — no Go, no full git clone required), then:
 
 ```sh
+cd /path/to/deploy   # directory with wb, midicat, run.sh, install.sh, wled-bridge.service
 sudo ./install.sh
 ```
 
-That copies `deploy/` into `/opt/wled-bridge`, enables `wled-bridge.service` at boot with `Restart=always`, and starts it immediately.
+That installs into `/opt/wled-bridge`, enables `wled-bridge.service` at boot with `Restart=always`, and starts it immediately.
 
 ## Rebuild binaries (developer Pi)
 

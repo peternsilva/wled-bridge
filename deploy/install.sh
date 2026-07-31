@@ -1,6 +1,7 @@
 #!/bin/sh
 # Install wled-bridge on Raspberry Pi OS Lite (Trixie, arm64).
-# Usage: sudo ./install.sh
+# This directory is self-contained: copy only these files to a new Pi, then:
+#   sudo ./install.sh
 set -eu
 
 if [ "$(id -u)" -ne 0 ]; then
@@ -8,8 +9,7 @@ if [ "$(id -u)" -ne 0 ]; then
 	exit 1
 fi
 
-ROOT=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
-DEPLOY="$ROOT/deploy"
+DEPLOY=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
 PREFIX=/opt/wled-bridge
 UNIT_SRC="$DEPLOY/wled-bridge.service"
 UNIT_DST=/etc/systemd/system/wled-bridge.service
