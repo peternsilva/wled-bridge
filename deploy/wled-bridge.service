@@ -1,0 +1,15 @@
+[Unit]
+Description=wled-bridge (keyboard, Xbox, MIDI to WLED)
+After=network-online.target sound.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/opt/wled-bridge
+ExecStart=/opt/wled-bridge/run.sh
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
