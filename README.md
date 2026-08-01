@@ -1,41 +1,58 @@
 # wled-bridge
 
-Translate qwerty, MIDI, and Xbox 360 controller input into WLED HTTP preset calls.
+Turns keyboard, Xbox 360 controller, and Launchpad MIDI into WLED light presets.
 
-Requires a bundled `midicat` 0.9.x binary (for `midicatdrv`) next to the app.
+## Install (Raspberry Pi)
 
-## Install on Raspberry Pi OS Lite (Trixie, arm64)
-
-Copy the contents of `deploy/` to the Pi (that folder alone is enough — no Go, no full git clone required), then:
+1. Copy everything inside the `deploy/` folder onto the Pi.
+2. On the Pi, open a terminal in that folder and run:
 
 ```sh
-cd /path/to/deploy   # directory with wb, midicat, run.sh, install.sh, wled-bridge.service
 sudo ./install.sh
 ```
 
-That installs into `/opt/wled-bridge`, enables `wled-bridge.service` at boot with `Restart=always`, and starts it immediately.
+That installs the app, starts it, and sets it to start again whenever the Pi boots.
 
-## Develop with `go run`
+To check that it’s running:
 
-`midicatdrv` requires `midicat` **0.9.x** on your `PATH` before the process starts. The bundled binary is in `deploy/`:
+```sh
+systemctl status wled-bridge
+```
+
+To see which build is installed:
+
+```sh
+cat /opt/wled-bridge/VERSION
+```
+
+## Developer notes
+
+**What it needs:** the `midicat` binary next to the app (`deploy/midicat`, version 0.9.x). The install script puts both under `/opt/wled-bridge`.
+
+**Run from source:**
 
 ```sh
 export PATH="$PWD/deploy:$PATH"
 go run .
-# or: ./deploy/run.sh -verbose   # after: ./build.sh
+# or after building: ./deploy/run.sh -verbose
 ```
 
-If an older `midicat` (e.g. 0.8.2 in `~/go/bin`) is earlier on `PATH`, replace it or put `deploy/` first.
+If an older `midicat` (e.g. 0.8.2 in `~/go/bin`) is earlier on `PATH`, put `deploy/` first or replace that binary.
 
-## Rebuild binaries (developer Pi)
+**Rebuild the app binary:**
 
 ```sh
 ./build.sh
-# prints e.g. built deploy/wb version main-a1b2c3d
 cat deploy/VERSION
 ./deploy/wb -version
-# refresh midicat from a local linux-arm64 0.9.5 build if needed:
-# cp /path/to/midicat deploy/midicat && chmod +x deploy/midicat
 ```
 
-Version strings are `BRANCH-commit` (7-char SHA), with `-dirty` when the tree has uncommitted changes.
+Versions look like `BRANCH-commit` (7-char SHA), with `-dirty` if there are uncommitted changes.
+
+**Refresh midicat** (linux-arm64 0.9.5), if needed:
+
+```sh
+cp /path/to/midicat deploy/midicat && chmod +x deploy/midicat
+```
+
+Target: Raspberry Pi OS Lite (Trixie, arm64). Copying only `deploy/` is enough — no Go toolchain or full git clone required on the install Pi.
