@@ -1,0 +1,33 @@
+---
+description: Product intent — keyboard/Xbox/Launchpad → WLED presets on Raspberry Pi
+alwaysApply: true
+---
+
+# wled-bridge product intent
+
+## Goal
+
+Raspberry Pi bridge: **keyboard**, **Xbox 360**, and **Novation Launchpad Mini MK3** → WLED preset changes via HTTP `POST /json/state` with `{"ps": N}` to `192.168.0.200` and `192.168.0.201`. Preserve keyboard/Xbox behavior when extending MIDI/Launchpad features.
+
+Repo entrypoint: `wb.go` (evolved from `xbkey-working` / `xb-key-midi`).
+
+## Launchpad MVP
+
+- Device: Launchpad Mini MK3, prefer **Programmer Mode** for input + LED control.
+- On connect, send Programmer Mode SysEx: `F0 00 20 29 02 0D 0E 01 F7` (gomidi: payload without F0/F7 wrappers as in `wb.go`).
+- MVP mapping: top-row **CC 91–94 → WLED presets 1–4**. Grid pads are note-on in stock Programmer Mode; surface CCs on top row / right column.
+- Light the **last pressed** pad/button (Note On + palette velocity; `15` is a placeholder color).
+- Programmer Mode often exposes **two USB MIDI ports** — prefer the correct DAW/programmer port when names differ; match `"Launchpad"` for now.
+
+## Settled tech
+
+- Library: `gitlab.com/gomidi/midi/v2`.
+- Driver: **`midicatdrv`** (blank import). App stays **CGO/ALSA-free**; midicat binary must be on PATH.
+- Do **not** use `rtmididrv` (needs ALSA/CGO), archived `portmididrv`, or removed `…/reader` package.
+- midicat must be **0.9.x** (see `midicat-deploy-pi` rule). Wrong `go install` paths (`gitlab.com/gomidi/tools/midicat`) left **0.8.2** and panic midicatdrv.
+
+## Non-goals / traps from history
+
+- `go install …@v0.10.0` is not a valid midicat tag for the paths tried.
+- LED control fails in Live Mode or without Programmer Mode / wrong out port.
+- Keyboard/Xbox keep reading `/dev/input` via `/proc/bus/input/devices`; do not regress that for MIDI work.

@@ -68,9 +68,18 @@ type LaunchpadState struct {
 	lastPressed uint8
 }
 
+// version is set at link time by build.sh (-ldflags "-X main.version=...").
+var version = "dev"
+
 func main() {
 	verbose := flag.Bool("verbose", false, "enable status logging")
+	showVersion := flag.Bool("version", false, "print build version and exit")
 	flag.Parse()
+
+	if *showVersion {
+		fmt.Println(version)
+		return
+	}
 
 	if *verbose {
 		fmt.Println("Starting. Reading keyboard, Xbox controller, and MIDI input...")

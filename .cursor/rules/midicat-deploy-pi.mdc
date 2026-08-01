@@ -1,0 +1,41 @@
+---
+description: midicat + deploy context for wled-bridge on RPi3 (arm64 / Pi OS Lite Trixie)
+alwaysApply: true
+---
+
+# midicat + wled-bridge on RPi3
+
+## Host
+
+- Raspberry Pi 3, **arm64**, Pi OS Lite **Trixie**
+- Repo of record: `~/wled-bridge` → github.com/peternsilva/wled-bridge
+
+## midicat (required by midicatdrv)
+
+- App blank-imports `midicatdrv` → **midicat 0.9.x must be on PATH before process start** (`init()` accepts ≥0.9.0 &lt;0.10.0).
+- Native build lives in `~/midicat` (not this git repo): `binaries/linux-arm64/midicat` **v0.9.5**, `CGO_ENABLED=1` (rtmidi + ALSA).
+- Makefile / deps: `~/midicat/tools/midicat/` (`BUILD_DEPS.md`). Runtime: `libasound2t64`. Build-only: go, gcc/g++, `libasound2-dev`.
+- **Do not** use `binaries/linux-amd64` prebuilts on the Pi.
+- Stale `~/go/bin/midicat` **0.8.2** causes `go run` panic — keep 0.9.5 or put `deploy/` first on PATH.
+
+## Deploy (self-contained)
+
+Copy only `deploy/` to a fresh Lite Pi, then:
+
+```sh
+cd deploy && sudo ./install.sh
+```
+
+Contents: `wb` (CGO-free arm64), `midicat` 0.9.5, `run.sh` (prepends dir to PATH), `wled-bridge.service`, `install.sh`.
+
+Install target: `/opt/wled-bridge`, systemd `Restart=always`, `enable --now`.
+
+Dev / `go run`:
+
+```sh
+export PATH="$PWD/deploy:$PATH"
+# or after building deploy/wb:
+./deploy/run.sh
+```
+
+`/opt` install may still be pending if sudo was blocked.

@@ -15,10 +15,27 @@ sudo ./install.sh
 
 That installs into `/opt/wled-bridge`, enables `wled-bridge.service` at boot with `Restart=always`, and starts it immediately.
 
+## Develop with `go run`
+
+`midicatdrv` requires `midicat` **0.9.x** on your `PATH` before the process starts. The bundled binary is in `deploy/`:
+
+```sh
+export PATH="$PWD/deploy:$PATH"
+go run .
+# or: ./deploy/run.sh -verbose   # after: ./build.sh
+```
+
+If an older `midicat` (e.g. 0.8.2 in `~/go/bin`) is earlier on `PATH`, replace it or put `deploy/` first.
+
 ## Rebuild binaries (developer Pi)
 
 ```sh
-CGO_ENABLED=0 go build -o deploy/wb .
+./build.sh
+# prints e.g. built deploy/wb version main-a1b2c3d
+cat deploy/VERSION
+./deploy/wb -version
 # refresh midicat from a local linux-arm64 0.9.5 build if needed:
 # cp /path/to/midicat deploy/midicat && chmod +x deploy/midicat
 ```
+
+Version strings are `BRANCH-commit` (7-char SHA), with `-dirty` when the tree has uncommitted changes.

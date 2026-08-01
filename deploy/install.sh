@@ -25,6 +25,9 @@ install -d "$PREFIX"
 install -m 755 "$DEPLOY/wb" "$PREFIX/wb"
 install -m 755 "$DEPLOY/midicat" "$PREFIX/midicat"
 install -m 755 "$DEPLOY/run.sh" "$PREFIX/run.sh"
+if [ -e "$DEPLOY/VERSION" ]; then
+	install -m 644 "$DEPLOY/VERSION" "$PREFIX/VERSION"
+fi
 install -m 644 "$UNIT_SRC" "$UNIT_DST"
 
 systemctl daemon-reload
